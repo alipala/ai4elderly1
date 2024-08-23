@@ -1,5 +1,7 @@
+# app/routers/profiles.py
+
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List  # Add this import
+from typing import List
 from app.models import UserProfile
 from app.services.profile_service import ProfileService
 from app.dependencies import get_current_active_user
@@ -30,3 +32,8 @@ async def update_profile(profile_id: str, profile: UserProfile, current_user: di
 async def get_all_profiles(current_user: dict = Depends(get_current_active_user)):
     profiles = await ProfileService.get_all_profiles()
     return profiles
+
+@router.post("/generate_spending_data/{profile_id}")
+async def generate_spending_data(profile_id: str, num_entries: int = 30, current_user: dict = Depends(get_current_active_user)):
+    await ProfileService.generate_synthetic_spending_data(profile_id, num_entries)
+    return {"message": f"Generated {num_entries} synthetic spending entries for profile {profile_id}"}
