@@ -1,7 +1,11 @@
+from app.models import UserProfile, SpendingEntry
 from app.models import UserProfile
 from app.database import database
 from bson import ObjectId
 from uuid import uuid4
+import random
+from datetime import datetime, timedelta
+
 
 class ProfileService:
     @staticmethod
@@ -45,4 +49,27 @@ class ProfileService:
                 "bot": ai_response,
                 "timestamp": timestamp
             }}}
+        )
+
+    @staticmethod
+    async def generate_synthetic_spending_data(profile_id: str, num_entries: int = 30):
+        categories = ["Groceries", "Utilities", "Entertainment", "Transportation", "Dining Out", "Healthcare"]
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=num_entries)
+
+        synthetic_data = []
+        for i in range(num_entries):
+            entry_date = (start_date + timedelta(days=i)).isoformat()  # Convert date to ISO format string
+            category = random.choice(categories)
+            amount = round(random.uniform(10, 200), 2)
+            synthetic_data.append({
+                "date": entry_date,
+                "category": category,
+                "amount": amount,
+                "description": f"Synthetic {category} expense"
+            })
+
+        await database.db.profiles.update_one(
+            {"_id": profile_id},
+            {"$set": {"spending_data": synthetic_data}}
         )

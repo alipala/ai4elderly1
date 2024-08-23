@@ -1,7 +1,13 @@
 # Backend: app/models.py
 from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime,date
+
+class SpendingEntry(BaseModel):
+    date: str
+    category: str
+    amount: float
+    description: Optional[str] = None
 
 class UserProfile(BaseModel):
     id: Optional[str] = None
@@ -13,6 +19,7 @@ class UserProfile(BaseModel):
     investments: Optional[str] = None
     financial_goals: List[str] = []
     spending_data: List[dict] = []
+    spending_data: List[SpendingEntry] = []
     conversation_history: List[dict] = []
 
 class UserInput(BaseModel):

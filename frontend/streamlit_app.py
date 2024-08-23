@@ -76,6 +76,16 @@ class FinancialAdvisorUI:
         if "profile" in st.session_state:
             st.subheader("Current Profile")
             st.json(st.session_state.profile)
+            
+            if st.button("Generate Synthetic Spending Data"):
+                headers = {"Authorization": f"Bearer {st.session_state.token}"}
+                response = requests.post(f"{self.api_url}/generate_spending_data/{st.session_state.profile['id']}", headers=headers)
+                if response.status_code == 200:
+                    st.success("Synthetic spending data generated successfully!")
+                    self.load_profile(st.session_state.profile['id'])  # Reload the profile to show new data
+                else:
+                    st.error("Failed to generate synthetic spending data")
+
     
     def view_stored_profiles(self):
         st.subheader("Stored Profiles")
