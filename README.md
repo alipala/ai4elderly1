@@ -1,7 +1,7 @@
-# AI Financial Advisor for Elderly People
+# Financial AI Advisor for Elderly People
 
 ## Project Overview
-This project is an AI-powered Financial Advisor bot specifically designed to assist elderly and visually impaired users with their financial queries and concerns. It aims to provide accessible, personalized financial advice using natural language processing and machine learning techniques.
+This project is an AI-powered Financial Advisor specifically designed to assist elderly users with their financial queries and concerns. It aims to provide accessible, personalized financial advice using natural language processing and machine learning techniques.
 
 ## Key Features
 
@@ -62,23 +62,11 @@ Our AI Financial Advisor application is built using a modern, modular architectu
   - Excellent at capturing long-range dependencies in text
   - Enables understanding of complex financial queries and generation of coherent, contextually relevant responses
 
-### Integration Layer
-- Connects the frontend, backend, and ML components
-- Handles data flow between different parts of the application
-- Ensures smooth communication between user interface and AI processing
-
-This multi-layered architecture allows for:
-- Separation of concerns, making the application easier to maintain and update
-- Scalability, as different components can be scaled independently
-- Flexibility in replacing or upgrading individual components without affecting the entire system
-
 1. **Language Model - GPT-3.5 (OpenAI)**: Chosen for its advanced natural language understanding and generation capabilities. It produces context-aware, human-like responses, crucial for providing empathetic and personalized financial advice.
 
 2. **Sentiment Analysis - DistilBERT (Hugging Face)**: A lightweight version of BERT, fine-tuned on the SST-2 (Stanford Sentiment Treebank) dataset. It's suitable for real-time sentiment analysis in our application.
 
 3. **Transformer Architecture**: Both GPT-3.5 and DistilBERT are based on the Transformer architecture, ideal for understanding complex financial queries and generating coherent, contextually relevant responses.
-
-4. **Modular Design**: The project uses a modular design, separating concerns like user profile management, sentiment analysis, and response generation.
 
 ## Setup and Installation
 ### Prerequisites
@@ -132,7 +120,9 @@ streamlit run streamlit_app.py
 Open your web browser and go to http://localhost:8501 to access the Streamlit interface
 
 ## Usage
-1. Open the Streamlit app in your web browser (typically at http://localhost:8501).
-2. Log in or create a new user profile.
-3. Interact with the AI Financial Advisor by typing your financial queries or concerns.
-4. View personalized advice, spending insights, and conversation history.
+1. Open the Streamlit app in your web browser (at http://localhost:8501).
+2. Log in with test admin user
+3. Create a new user profile(or load an existing one)
+4. Generate syntetic spending data to have accurate advice based on this
+3. Interact with the Financial AI Advisor by typing your financial queries or concerns.
+4. View personalized advice, spending insights, and conversation history
