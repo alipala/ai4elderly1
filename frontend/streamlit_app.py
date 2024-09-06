@@ -2,6 +2,9 @@ import streamlit as st
 import requests
 import os
 from dotenv import load_dotenv
+import sounddevice as sd
+import numpy as np
+import io
 
 load_dotenv()
 
@@ -15,9 +18,15 @@ class FinancialAdvisorUI:
         if "token" in st.session_state:
             self.show_profile_management()
             if "profile" in st.session_state:
-                self.show_chat_interface()
+                tab1, tab2 = st.tabs(["Chat Interface", "Voice Interface"])
+                with tab1:
+                    self.show_chat_interface()
+                with tab2:
+                    self.show_voice_interface()
             else:
                 st.warning("Please load or create a profile before chatting.")
+        else:
+            st.warning("Please log in to access the AI Financial Advisor features.")
 
     def handle_authentication(self):
         if "token" not in st.session_state:
@@ -152,7 +161,7 @@ class FinancialAdvisorUI:
                 st.markdown("---")
         
         # Chat input
-        with st.form("chat_form", clear_on_submit=True):
+        with st.form("chat_form_unique", clear_on_submit=True):
             user_input = st.text_input("Your message", key="user_message")
             send_button = st.form_submit_button("Send")
             
@@ -200,6 +209,64 @@ class FinancialAdvisorUI:
             if response.status_code == 200:
                 return response.json()
         return []
+    
+    def show_voice_interface(self):
+        st.header("Voice Banking Assistant")
+        
+        if "voice_auth_setup" not in st.session_state:
+            st.session_state.voice_auth_setup = False
+
+        if not st.session_state.voice_auth_setup:
+            st.warning("Please set up voice authentication before using the voice assistant.")
+            if st.button("Setup Voice Authentication"):
+                audio = self.record_audio()
+                if audio is not None:
+                    success = self.setup_voice_auth(audio)
+                    if success:
+                        st.session_state.voice_auth_setup = True
+                        st.success("Voice authentication set up successfully!")
+                    else:
+                        st.error("Failed to set up voice authentication. Please try again.")
+        else:
+            st.success("Voice authentication is set up.")
+            if st.button("Speak to Assistant"):
+                audio = self.record_audio()
+                if audio is not None:
+                    self.process_voice_command(audio)
+
+    def record_audio(self, duration=5):
+        st.write("Recording... Speak now!")
+        audio = sd.rec(int(duration * 16000), samplerate=16000, channels=1)
+        sd.wait()
+        return audio.flatten().tobytes()
+
+    def setup_voice_auth(self, audio):
+        headers = {"Authorization": f"Bearer {st.session_state.token}"}
+        files = {"audio": ("audio.wav", audio, "audio/wav")}
+        url = f"{self.api_url}/voice/setup-voice-auth/{st.session_state.profile['id']}"
+        st.write(f"Sending request to: {url}")
+        response = requests.post(url, headers=headers, files=files)
+        st.write(f"Response status code: {response.status_code}")
+        st.write(f"Response content: {response.text}")
+        if response.status_code == 200:
+            st.success("Voice authentication set up successfully!")
+            return True
+        else:
+            st.error(f"Failed to set up voice authentication: {response.text}")
+            return False
+
+    def process_voice_command(self, audio):
+        headers = {"Authorization": f"Bearer {st.session_state.token}"}
+        files = {"audio": ("audio.wav", audio, "audio/wav")}
+        response = requests.post(f"{self.api_url}/voice/voice-command/{st.session_state.profile['id']}", 
+                                headers=headers, files=files)
+        if response.status_code == 200:
+            result = response.json()
+            st.write(f"You said: {result['text']}")
+            st.write(f"Assistant: {result['response']}")
+            st.write(f"Sentiment: {result['sentiment']} (Confidence: {result['confidence']})")
+        else:
+            st.error(f"Failed to process voice command: {response.text}")
 
 if __name__ == "__main__":
     financial_advisor_ui = FinancialAdvisorUI()

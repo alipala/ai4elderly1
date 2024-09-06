@@ -21,6 +21,7 @@ class UserProfile(BaseModel):
     spending_data: List[dict] = []
     spending_data: List[SpendingEntry] = []
     conversation_history: List[dict] = []
+    voice_features: Optional[List[float]] = None
 
 class UserInput(BaseModel):
     message: str
